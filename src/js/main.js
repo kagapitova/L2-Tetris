@@ -9,7 +9,7 @@ import {
 	startBtn,
 	pauseBtn,
 	levelsLimits,
-	state
+	state, initPlayField
 } from './statments.js'; // импортируем состояния
 
 // рандомайзер номера цвета, далее пригодится для установки на стиль нашей фигуры
@@ -18,7 +18,7 @@ const setColor = () => {
 	console.log(res);
 	return res; // здесь мы получим рандомный цвет для нашей фигуры
 }
-const color = setColor(); // получили цвет
+let color = setColor(); // получили цвет
 let activeTetro = getNewTetro();  // сгенерировали текущую фигуру
 let nextTetro = getNewTetro(); // сгенерировали следующую фигуру
 
@@ -193,31 +193,20 @@ function dropeTetro() { // сброс фигуры
 function reset() { // очистка поля к новой игре
 	state.isPaused = true;
 	clearTimeout(state.gameTimeID); // ичистка таймера игры
-	playfield = [
-		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-	];
-	
+	color = setColor(); // получили цвет
+	activeTetro = getNewTetro();  // сгенерировали текущую фигуру
+	nextTetro = getNewTetro(); // сгенерировали следующую фигуру
+	initPlayField();
+	resetScore();
 	renderField();
 	gameOver.style.display = 'block';
+}
+
+function resetScore() {
+	state.score = 0;
+	scoreElem.innerHTML = state.score;
+	state.currentLevel = 1;
+	levelElem.innerHTML = state.currentLevel;
 }
 
 document.onkeydown = function (e) { // устанавливем слушателей на клавиши
@@ -264,22 +253,18 @@ pauseBtn.addEventListener('click', (e) => { // слушатель на пауз�
 });
 
 startBtn.addEventListener('click', (e) => { // слушатель на старт
-	if (e.target.innerHTML === 'Start') { // меняем названия кнопки
-		e.target.innerHTML = 'Start again';
-		state.isPaused = false; // меняем состояние паузы
-		state.gameTimeID = setTimeout(startGame, levelsLimits[state.currentLevel].speed);  // запускаем игру
-	} else {
-		clearTimeout(state.gameTimeID)   // очищаем таймер
-		gameOver.style.display = 'block'; // показываем сообщение конец игры
-		setTimeout(() => window.location.reload(), 1000); // обновляем страницу
-	}
+	// if (e.target.innerHTML === 'Start') { // меняем названия кнопки
+	reset();
+	e.target.innerHTML = 'Start again';
+	pauseBtn.innerHTML = 'Pause'
+	state.isPaused = false; // меняем состояние паузы
+	state.gameTimeID = setTimeout(startGame, levelsLimits[state.currentLevel].speed);  // запускаем игру
+	gameOver.style.display = 'none'; // показываем сообщение конец игры
+	// } else {
+	// 	clearTimeout(state.gameTimeID)   // очищаем таймер
+	// 	setTimeout(() => window.location.reload(), 1000); // обновляем страницу
+	// }
 });
-// передаем данные в табло
-scoreElem.innerHTML = state.score;
-levelElem.innerHTML = state.currentLevel;
-
-renderField(); // рендерим поле
-
 function startGame() { // вызов игры
 	moveDown(); // начинаем двидениеи фигуры вниз
 	if (!state.isPaused) {
@@ -287,3 +272,9 @@ function startGame() { // вызов игры
 		state.gameTimeID = setTimeout(startGame, levelsLimits[state.currentLevel].speed); // записываем текущий такмер в состояние
 	}
 }
+
+// передаем данные в табло
+scoreElem.innerHTML = state.score;
+levelElem.innerHTML = state.currentLevel;
+
+renderField(); // рендерим поле
