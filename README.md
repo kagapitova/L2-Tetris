@@ -13,4 +13,4 @@ https://kagapitova.github.io/L2-Tetris/src/
 - `JS`.
 
 ## deadline - 11.10.2023 
-## ready - 26.09.2023
+## ready - 07.10.2023
