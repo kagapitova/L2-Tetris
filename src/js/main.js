@@ -15,7 +15,6 @@ import {
 // рандомайзер номера цвета, далее пригодится для установки на стиль нашей фигуры
 const setColor = () => {
 	const res = Math.ceil(Math.random() * 6);
-	console.log(res);
 	return res; // здесь мы получим рандомный цвет для нашей фигуры
 }
 let color = setColor(); // получили цвет
